@@ -2,15 +2,15 @@
 """
 Cloudformation generation
 """
-from aws_cdk import core
+import aws_cdk as cdk
 
 import my_stack
 
 
-app = core.App()
+app = cdk.App()
 
 # Best practice is to explicitly set account ids and region
-ACME_ENV_WEST = dict(account="123412341234", region="us-west-2")
+ACME_ENV_WEST = cdk.Environment(account="123412341234", region="us-west-2")
 
 my_stack.MyStack(app,
         "acme-prod-DemoLambda",

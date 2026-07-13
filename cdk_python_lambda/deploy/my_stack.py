@@ -1,30 +1,22 @@
-import os
-
-from aws_cdk import core
-from aws_cdk import aws_ec2
+import aws_cdk as cdk
 from aws_cdk import aws_events
 from aws_cdk import aws_events_targets
-from aws_cdk import aws_iam
 from aws_cdk import aws_lambda
-from aws_cdk import aws_lambda_event_sources
 from aws_cdk import aws_logs
-from aws_cdk import aws_route53
-from aws_cdk import aws_route53_targets
-from aws_cdk import aws_sqs
+from constructs import Construct
 
 
-class MyStack(core.Stack):
-    def __init__(self, app: core.App, id: str,
+class MyStack(cdk.Stack):
+    def __init__(self, scope: Construct, construct_id: str,
             **kwargs) -> None:
 
-        super().__init__(app, id, **kwargs)
+        super().__init__(scope, construct_id, **kwargs)
 
-        stack_name = core.Stack.of(self).stack_name
-        env_type = stack_name.split("-")[1]   # prod, stage, qa, dev, etc.
-
+        stack_name = cdk.Stack.of(self).stack_name
         layer = aws_lambda.LayerVersion(self,
                 "BaseLayer",
                 code=aws_lambda.Code.asset("/app/layer"),
+                compatible_runtimes=[aws_lambda.Runtime.PYTHON_3_14],
                 )
 
         # Use only one asset instance, so we aren't using extra cloudformation parameters,
@@ -37,9 +29,9 @@ class MyStack(core.Stack):
             code=app_code,
             layers=[layer],
             handler="main.main",
-            runtime=aws_lambda.Runtime.PYTHON_3_7,
+            runtime=aws_lambda.Runtime.PYTHON_3_14,
             memory_size=768,
-            timeout=core.Duration.seconds(60),
+            timeout=cdk.Duration.seconds(60),
             log_retention=aws_logs.RetentionDays.ONE_MONTH,
         )
 
